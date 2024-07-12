@@ -95,7 +95,7 @@ def run_inquiry(inquiry):
 # Function to fetch transactions from database
 def fetch_transactions():
     conn = get_db_connection()
-    cursor = conn.execute('SELECT DISTINCT * FROM transactions ORDER BY InvoiceDate DESC')
+    cursor = conn.execute('SELECT * FROM transactions ORDER BY InvoiceDate DESC')
     transactions = cursor.fetchall()
     conn.close()
     return transactions

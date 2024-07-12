@@ -129,8 +129,11 @@ def run_inquiry(inquiry):
 def format_llama_response(response):
     try:
         json_response = json.loads(response)  # LLAMA 응답을 JSON 객체로 변환
-        result = json_response['predictions'][0]['generated_text']  # 예시로, LLAMA 응답에서 텍스트 생성 부분을 추출
-        formatted_response = f"Response: {result}\n<br>\nExplanation: Explanation goes here.\n<br>\nAdvice: Tips for users."
+        if 'predictions' in json_response and json_response['predictions']:
+            result = json_response['predictions'][0]['generated_text']  # 예시로, LLAMA 응답에서 텍스트 생성 부분을 추출
+            formatted_response = f"Response: {result}\n<br>\nExplanation: Explanation goes here.\n<br>\nAdvice: Tips for users."
+        else:
+            formatted_response = "Error: Unexpected format of LLAMA response."
     except Exception as e:
         formatted_response = f"Error occurred: {str(e)}"
     

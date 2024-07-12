@@ -111,7 +111,8 @@ def main():
 
     if st.button('Submit'):
         response = run_inquiry(inquiry)
-        st.markdown(f"**Response:** {response}")
+        st.markdown(f"**Response:**")
+        st.write(response)
 
     # Display transactions table
     st.markdown("**Transactions:**")

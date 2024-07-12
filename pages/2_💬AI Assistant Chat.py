@@ -7,7 +7,6 @@ from ibm_watson_machine_learning.foundation_models import Model
 from ibm_watson_machine_learning.foundation_models.extensions.langchain import WatsonxLLM
 
 import os
-import pandas as pd
 
 # 현재 스크립트 파일의 디렉토리 경로 가져오기
 current_dir = os.path.dirname(__file__)
@@ -39,18 +38,8 @@ def get_db_connection():
     conn = sqlite3.connect('history.db', check_same_thread=False)
     return conn
 
-# Function to load CSV file into SQLite database
-def load_csv_to_database(csv_file_path):
-    conn = get_db_connection()
-    df = pd.read_csv(csv_file_path)
-    df.to_sql('transactions', conn, if_exists='replace', index=False)
-    conn.close()
-
 # Initialize Streamlit app
 def main():
-    # Load CSV file into SQLite database
-    load_csv_to_database(csv_file_path)
-    
     st.title('Text-To-Watsonx : Engage AR')
 
     # Introduction section

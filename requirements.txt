@@ -1,6 +1,6 @@
 Requests==2.30.0
 streamlit==1.24.1
-llama-index==0.8.9  # or the version that supports LangchainEmbedding
+llama-index==0.8.9  # 명확한 버전을 지정합니다.
 llama-cpp-python==0.1.9
 nltk==3.8.1
 sentence-transformers==2.2.2
@@ -10,5 +10,5 @@ ibm-watson-machine-learning>=1.0.320
 langchain>=0.0.145
 pydantic>=1.10.0
 streamlit-option-menu==0.1.2
-streamlit-extras==0.1.0  # specify a version
+streamlit-extras==0.1.1  # 유효한 버전 중 하나를 사용합니다.
 torch==2.0.1

@@ -1,7 +1,6 @@
 import streamlit as st
 import sqlite3
 from datetime import datetime
-import pytz
 import csv
 from ibm_watson_machine_learning.foundation_models import Model
 from ibm_watson_machine_learning.foundation_models.extensions.langchain import WatsonxLLM
@@ -63,6 +62,28 @@ def get_db_connection():
     conn = sqlite3.connect('history.db', check_same_thread=False)
     return conn
 
+# Function to handle inquiry submission
+def run_inquiry(inquiry):
+    conn = get_db_connection()
+
+    # Create SQL query based on the inquiry text
+    QUERY = f"""SELECT * FROM transactions WHERE {inquiry} ORDER BY InvoiceDate DESC"""
+    
+    # Placeholder for query execution using WatsonxLLM or other logic
+    response = llm.generate_text(prompt=QUERY)
+    
+    conn.close()
+
+    return response
+
+# Function to fetch transactions from database
+def fetch_transactions():
+    conn = get_db_connection()
+    cursor = conn.execute('SELECT * FROM transactions ORDER BY InvoiceDate DESC')
+    transactions = cursor.fetchall()
+    conn.close()
+    return transactions
+
 # Initialize Streamlit app
 def main():
     st.title('Text-To-Watsonx : Engage AR')
@@ -97,29 +118,7 @@ def main():
     transactions = fetch_transactions()[:21]  # Limit to first 20 rows
     st.table(transactions)
 
-# Function to handle inquiry submission
-def run_inquiry(inquiry):
-    conn = get_db_connection()
-    cursor = conn.execute('SELECT id, * FROM transactions ORDER BY InvoiceDate DESC')
-    transactions = [dict(ix) for ix in cursor.fetchall()]
-    conn.close()
-
-    # Placeholder for query execution using WatsonxLLM or other logic
-    response = f"Response for inquiry '{inquiry}'"
-    return response
-
-# Function to fetch transactions from database
-def fetch_transactions():
-    conn = get_db_connection()
-    cursor = conn.execute('SELECT * FROM transactions ORDER BY InvoiceDate DESC')
-    transactions = cursor.fetchall()
-    conn.close()
-    return transactions
-
-if __name__ == '__main__':
-    main()
-
-# Custom CSS for table styling
+    # Custom CSS for table styling
     st.markdown(
         """
         <style>
@@ -139,3 +138,6 @@ if __name__ == '__main__':
         """,
         unsafe_allow_html=True
     )
+
+if __name__ == '__main__':
+    main()

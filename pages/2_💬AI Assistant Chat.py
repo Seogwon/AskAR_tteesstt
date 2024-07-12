@@ -2,7 +2,7 @@ import streamlit as st
 from datetime import datetime
 import pytz
 from langchain.utilities import SQLDatabase
-from langchain.chains.sql_database.base import SQLDatabaseChain
+from langchain_experimental.sql import SQLDatabaseChain
 import sqlite3
 import csv
 

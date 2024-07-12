@@ -164,16 +164,6 @@ def main():
         unsafe_allow_html=True
     )
      
-    st.markdown(
-    """
-    <style>
-    table.dataframe {
-        width: 100%;
-        table-layout: auto;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
 )
 
 

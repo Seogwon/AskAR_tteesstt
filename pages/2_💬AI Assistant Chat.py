@@ -71,14 +71,13 @@ def run_inquiry(inquiry):
     
     try:
         # Placeholder for query execution using WatsonxLLM or other logic
-        response = llm.generate_text(prompt=QUERY)
+        response = llm.run(prompt=QUERY)
     except Exception as e:
         response = f"Error occurred: {str(e)}"
     
     conn.close()
 
     return response
-
 
 # Function to fetch transactions from database
 def fetch_transactions():

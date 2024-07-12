@@ -45,7 +45,7 @@ input[type=message], input[type=email], input[type=text], textarea {
 
 
 .st-emotion-cache-1xtop7k{
-  background-color: black
+  background-color: #D1D5DB; /* 연한 회색으로 변경 */
 }
 
 

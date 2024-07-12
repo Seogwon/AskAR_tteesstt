@@ -27,25 +27,25 @@ if "messages" not in st.session_state:
     welcome_msg = f"Hi! I'm {name}'s AI Assistant, Buddy. How may I assist you today?"
     st.session_state.messages = [{"role": "assistant", "content": welcome_msg}]
 
-# app sidebar (좌측 메뉴 하단)
+# App sidebar
 with st.sidebar:
     st.markdown("""
-                # FAQ
+                # Chat with my AI assistant
                 """)
     with st.expander("Click here to see FAQs"):
         st.info(
             f"""
-            - What are the items with a due date after today??
-            - Show me the list where the collector is Lisa and the category is Yellow!
-            - Show me the list where the collector is David and the forecast code is AUTO!
-            - Show me the list where the collector is John and the forecast date is after August!
-            - How many AUTO in Forecastcode per collector?
-            - How many invoice numbers with due date greater than August 10th 2024?
-            - How many green per collector in category??
-            - ++++++++++++++TBD++++++++++++++
+            - What are {pronoun} strengths and weaknesses?
+            - What is {pronoun} expected salary?
+            - What is {pronoun} latest project?
+            - When can {subject} start to work?
+            - Tell me about {pronoun} professional background
+            - What is {pronoun} skillset?
+            - What is {pronoun} contact?
+            - What are {pronoun} achievements?
             """
         )
-        
+    
     import json
     messages = st.session_state.messages
     if messages is not None:
@@ -56,7 +56,7 @@ with st.sidebar:
             mime='json',
         )
 
-    st.caption(f"© Made by CSL_Test 2024. All rights reserved.")
+    st.caption(f"© Made by {full_name} 2023. All rights reserved.")
 
 
 with st.spinner("Initiating the AI assistant. Please hold..."):
@@ -67,8 +67,8 @@ with st.spinner("Initiating the AI assistant. Please hold..."):
     llm_hub = None
     embeddings = None
     
-    Watsonx_API = "w3tA2Es6y0R5z5t2EMhI6sxEarmloP3WnrY902iC81uL"
-    Project_id= "16acfdcc-378f-4268-a2f4-ba04ca7eca08"
+    Watsonx_API = "WX-fh0WLD6Ydj4m671cxUqZOqb9MbOTbOYeoVYw9tjYh"
+    Project_id= "21f39c9c-53aa-490d-9966-2a373e0ad09a"
 
     # Function to initialize the language model and its embeddings
     def init_llm():

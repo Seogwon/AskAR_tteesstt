@@ -69,12 +69,16 @@ def run_inquiry(inquiry):
     # Create SQL query based on the inquiry text
     QUERY = f"""SELECT * FROM transactions WHERE {inquiry} ORDER BY InvoiceDate DESC"""
     
-    # Placeholder for query execution using WatsonxLLM or other logic
-    response = llm.generate_text(prompt=QUERY)
+    try:
+        # Placeholder for query execution using WatsonxLLM or other logic
+        response = llm.generate_text(prompt=QUERY)
+    except Exception as e:
+        response = f"Error occurred: {str(e)}"
     
     conn.close()
 
     return response
+
 
 # Function to fetch transactions from database
 def fetch_transactions():

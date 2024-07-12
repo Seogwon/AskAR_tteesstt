@@ -5,7 +5,12 @@ import pytz
 from langchain_experimental.sql import SQLDatabaseChain
 from ibm_watson_machine_learning.foundation_models import Model
 from ibm_watson_machine_learning.foundation_models.extensions.langchain import WatsonxLLM
-import csv
+
+import os
+
+# 현재 스크립트 파일의 디렉토리 경로 가져오기
+current_dir = os.path.dirname(__file__)
+csv_file_path = os.path.join(current_dir, 'pages', 'transactions.csv')
 
 # Define your credentials and parameters
 my_credentials = {

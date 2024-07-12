@@ -16,7 +16,7 @@ local_css("styles/styles_main.css")
 # get the variables from constants.py
 pronoun = info['Pronoun']
 
-# app sidebar
+# app sidebar (좌측 메뉴 하단)
 with st.sidebar:
     st.markdown("""
                 # FAQ

@@ -144,12 +144,6 @@ def main():
     st.dataframe(transactions)
 
     # Custom CSS for table styling
-    #
-    st.markdown("**Transactions:**")
-    transactions = fetch_transactions()
-    st.dataframe(transactions, width=1000)
-    #
-    
     st.markdown(
         """
         <style>

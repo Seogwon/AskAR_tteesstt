@@ -1,5 +1,6 @@
 import streamlit as st
 import sqlite3
+import pandas as pd
 import csv
 from ibm_watson_machine_learning import APIClient
 from ibm_watson_machine_learning.foundation_models import Model
@@ -98,7 +99,14 @@ def fetch_transactions():
     cursor = conn.execute('SELECT DISTINCT * FROM transactions ORDER BY InvoiceDate DESC')
     transactions = cursor.fetchall()
     conn.close()
-    return transactions
+
+    # Convert fetched data into DataFrame
+    df = pd.DataFrame(transactions, columns=['Category', 'CustomerName', 'CustomerNumber', 'InvoiceNumber', 'InvoiceAmount',
+                                             'InvoiceDate', 'DueDate', 'ForecastCode', 'ForecastDate', 'Collector'])
+    # Add 1 to index to make it 1-based
+    df.index = df.index + 1
+
+    return df
 
 # Initialize Streamlit app
 def main():
@@ -130,10 +138,10 @@ def main():
         st.markdown(f"**Response:**")
         st.write(response)
 
-    # Display transactions table
+    # Display transactions table using Pandas DataFrame
     st.markdown("**Transactions:**")
     transactions = fetch_transactions()
-    st.table(transactions)
+    st.dataframe(transactions)
 
     # Custom CSS for table styling
     st.markdown(

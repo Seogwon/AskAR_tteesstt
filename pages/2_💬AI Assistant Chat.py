@@ -70,14 +70,9 @@ params = {
 }
 
 # Load the WatsonxLLM model
-LLAMA2_model = Model(
-    model_id='meta-llama/llama-2-70b-chat',
-    credentials=my_credentials,
-    params=params,
-    project_id="16acfdcc-378f-4268-a2f4-ba04ca7eca08",
-)
-
-llm = WatsonxLLM(LLAMA2_model)
+LLAMA2_model_details = client.repository.get_details("meta-llama/llama-2-70b-chat")
+LLAMA2_model_uid = client.repository.get_model_uid(LLAMA2_model_details)
+llm = WatsonxLLM(client, LLAMA2_model_uid)
 
 # Function to handle inquiry submission
 def run_inquiry(inquiry):
@@ -88,12 +83,7 @@ def run_inquiry(inquiry):
 
     try:
         # Perform model inference with WatsonxLLM
-        invocation_payload = {
-            "input_data": [{
-                "values": [query]
-            }]
-        }
-        response = client.deployments.score(LLAMA2_model.uid, invocation_payload)
+        response = llm.generate_text(prompt=query)
     except Exception as e:
         response = f"Error occurred: {str(e)}"
     

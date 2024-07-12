@@ -87,39 +87,7 @@ with col2:
     profile = Image.open("images/profile.png")
     st.image(profile, width=280)
 
-            
-with st.container():
-    st.write("---")
-    st.subheader('🚀 Project Showcase')
-
-    projects = projects
-
-    def display_project(col, project):
-        with col:
-            st.markdown(
-                f'<a href="{project["link"]}" target="_blank" class="portfolio-item" data-id="3">'
-                f'<img src="{project["image_url"]}" style="width:100%;height:auto;"></a>',
-                unsafe_allow_html=True,
-            )
-            st.markdown(f'<p style="font-size: 16px; font-weight: bold;">{project["title"]}</p>', unsafe_allow_html=True)
-            st.markdown(f'<p style="font-size: 14px">{project["description"]}</p>', unsafe_allow_html=True)
-    col1, col2, col3 = st.columns([1,1,1])
-    columns = [col1, col2, col3]
-
-    # Adjust the range(0, len(projects), 3) accordingly if your projects length is not a multiple of 3
-    for i in range(0, len(projects), 3):
-        for j, col in enumerate(columns):
-            if i + j < len(projects):  # Check if project index is within range
-                display_project(col, projects[i + j])
-st.markdown(""" <a href={}> <em>👀 Click here to see more </a>""".format(info['Project']), unsafe_allow_html=True)
-    
-with st.container():
-    st.markdown("""""")
-    st.subheader('✍️ Medium')
-    col1,col2 = st.columns([0.95, 0.05])
-    components.html(embed_rss['rss'],height=300)
-    st.markdown(""" <a href={}> <em>👀 Click here to see more</a>""".format(info['Medium']), unsafe_allow_html=True)
-
+       
 st.write("---")
 with st.container():  
     col1,col2,col3 = st.columns([0.475, 0.475, 0.05])

@@ -131,9 +131,9 @@ def main():
         st.write(response)
 
     # Display transactions table
-    #st.markdown("**Transactions:**")
-    #transactions = fetch_transactions()[:21]  # Limit to first 20 rows
-    #st.table(transactions)
+    st.markdown("**Transactions:**")
+    transactions = fetch_transactions()
+    st.table(transactions)
 
     # Custom CSS for table styling
     st.markdown(

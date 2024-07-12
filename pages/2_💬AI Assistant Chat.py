@@ -5,6 +5,7 @@ import pytz
 from langchain_experimental.sql import SQLDatabaseChain
 from ibm_watson_machine_learning.foundation_models import Model
 from ibm_watson_machine_learning.foundation_models.extensions.langchain import WatsonxLLM
+import csv
 
 # Define your credentials and parameters
 my_credentials = {

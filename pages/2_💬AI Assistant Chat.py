@@ -78,7 +78,12 @@ def main():
     # Example inquiries section (optional)
     st.markdown("**Example Inquiries:**")
     st.markdown("- What are the items with a due date after today?")
-    st.markdown("- Show me the list where the collector is Lisa and the category is Yellow.")
+    st.markdown("- Show me the list where the collector is Lisa and the category is Yellow!")
+    st.markdown("- Show me the list where the collector is David and the forecast code is AUTO!")
+    st.markdown("- Show me the list where the collector is John and the forecast date is after August!")
+    st.markdown("- How many AUTO in Forecastcode per collector?")
+    st.markdown("- How many invoice numbers with due date greater than August 10th 2024?")
+    st.markdown("- How many green per collector in category?")
 
     # Form for inquiry submission
     inquiry = st.text_input('Submit an Inquiry:', '')

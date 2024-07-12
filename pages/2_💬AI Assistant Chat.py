@@ -114,20 +114,23 @@ def fetch_transactions():
 if __name__ == '__main__':
     main()
 
-# Custom CSS for table borders
-st.markdown(
-    """
-    <style>
-    table.dataframe {
-        border: 2px solid black;
-    }
-    th {
-        border: 2px solid black;
-    }
-    td {
-        border: 2px solid black;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
+# Custom CSS for table styling
+    st.markdown(
+        """
+        <style>
+        table.dataframe {
+            border: 1px solid black;
+            text-align: center; /* Center align text in cells */
+        }
+        th {
+            border: 1px solid black;
+            text-align: center; /* Center align text in header cells */
+        }
+        td {
+            border: 1px solid black;
+            text-align: center; /* Center align text in data cells */
+        }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )

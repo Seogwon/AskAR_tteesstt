@@ -7,7 +7,7 @@ sentence-transformers==2.2.2
 InstructorEmbedding==1.0.0
 huggingface-hub==0.16.4
 ibm-watson-machine-learning>=1.0.320
-langchain>=0.0.145
+langchain==0.0.145
 pydantic>=1.10.0
 streamlit-option-menu==0.1.2
 streamlit-extras>=0.1.0

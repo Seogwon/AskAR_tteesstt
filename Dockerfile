@@ -23,4 +23,4 @@ USER myuser
 ENTRYPOINT ["streamlit", "run"]
 
 # Specify the default Streamlit application script to run
-CMD ["💼Portfolio.py"]
+CMD ["💵TTW_AskAR.py"]

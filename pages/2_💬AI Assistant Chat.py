@@ -104,11 +104,11 @@ def run_inquiry(inquiry):
     return response
 
 # Function to fetch transactions from database
-@st.cache(allow_output_mutation=True, hash_funcs={sqlite3.Connection: id})
 def fetch_transactions():
     conn = get_db_connection()
     cursor = conn.execute('SELECT * FROM transactions ORDER BY InvoiceDate DESC')
     transactions = cursor.fetchall()
+    conn.close()  # 이 부분이 제대로 관리되어야 합니다.
     return transactions
 
 if __name__ == '__main__':

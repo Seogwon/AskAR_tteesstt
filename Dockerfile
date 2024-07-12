@@ -1,11 +1,8 @@
-# Use the base image with Python 3.10, uWSGI, and Nginx
-FROM tiangolo/uwsgi-nginx-flask:python3.10
+# Use the base image with Python 3.11
+FROM python:3.11-slim
 
 # Create a system group and user for running the application
 RUN groupadd -r myuser && useradd -r -g myuser myuser
-
-# Switch to the root user context temporarily (for privileged operations)
-USER root 
 
 # Set the working directory inside the Docker container
 WORKDIR /portfolio-chat-demo
@@ -14,10 +11,13 @@ WORKDIR /portfolio-chat-demo
 COPY . .
 
 # Install Python packages listed in requirements.txt using pip
-RUN pip install -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Expose port 8501 for external access
 EXPOSE 8501
+
+# Switch to the non-root user context
+USER myuser
 
 # Define the entry point command to run when the container starts
 ENTRYPOINT ["streamlit", "run"]

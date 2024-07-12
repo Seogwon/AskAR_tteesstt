@@ -55,7 +55,7 @@ with col1:
     st.write(info['About'])
 
     from streamlit_extras.switch_page_button import switch_page
-    col_1, col_2, temp = st.columns([0.35,0.2,0.45])
+    col_1, col_2, temp = st.columns([0.5,0.2,0.3])
     with col_1:
         btn1 = st.button("Feel free to ask anything about AR")
         if btn1:

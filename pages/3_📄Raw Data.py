@@ -13,26 +13,26 @@ local_css("styles/styles_main.css")
 # get the variables from constants.py
 pronoun = info['Pronoun']
 
-# app sidebar
+# app sidebar (좌측 메뉴 하단)
 with st.sidebar:
     st.markdown("""
-                # Chat with my AI assistant
+                # FAQ
                 """)
     with st.expander("Click here to see FAQs"):
         st.info(
             f"""
-            - What are {pronoun} strengths and weaknesses?
-            - What is {pronoun} expected salary?
-            - What is {pronoun} latest project?
-            - When can {pronoun} start to work?
-            - Tell me about {pronoun} professional background
-            - What is {pronoun} skillset?
-            - What is {pronoun} contact?
-            - What are {pronoun} achievements?
+            - What are the items with a due date after today??
+            - Show me the list where the collector is Lisa and the category is Yellow!
+            - Show me the list where the collector is David and the forecast code is AUTO!
+            - Show me the list where the collector is John and the forecast date is after August!
+            - How many AUTO in Forecastcode per collector?
+            - How many invoice numbers with due date greater than August 10th 2024?
+            - How many green per collector in category??
+            - ++++++++++++++TBD++++++++++++++
             """
         )
         
-    st.caption(f"© Made by Vicky Kuo 2023. All rights reserved.")
+    st.caption(f"© Made by CSL_Test 2024. All rights reserved.")
  
 st.title("📝 Raw Data")
 

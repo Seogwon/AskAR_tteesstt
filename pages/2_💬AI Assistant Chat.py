@@ -9,7 +9,39 @@ import csv
 
 #
 from contextlib import closing
+# Function to create SQLite table and import data from CSV
+def create_table_from_csv():
+    conn = sqlite3.connect('history.db')
+    c = conn.cursor()
+    
+    # Create the transactions table if it doesn't exist
+    c.execute('''CREATE TABLE IF NOT EXISTS transactions (
+                 Category TEXT,
+                 CustomerName TEXT,
+                 CustomerNumber INTEGER,
+                 InvoiceNumber TEXT,
+                 InvoiceAmount TEXT,
+                 InvoiceDate TEXT,
+                 DueDate TEXT,
+                 ForecastCode TEXT,
+                 ForecastDate TEXT,
+                 Collector TEXT
+                 )''')
+
+    # Read data from CSV and insert into SQLite table
+    with open('transactions.csv', 'r', newline='', encoding='utf-8') as csvfile:
+        csvreader = csv.reader(csvfile)
+        next(csvreader)  # Skip header
+        for row in csvreader:
+            c.execute('INSERT INTO transactions VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', row)
+    
+    conn.commit()
+    conn.close()
+
+# Call the function to create the table and import data
+create_table_from_csv()
 #
+
 
 
 # Define your credentials and parameters

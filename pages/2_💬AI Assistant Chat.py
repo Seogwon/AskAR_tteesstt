@@ -2,10 +2,9 @@ import streamlit as st
 import sqlite3
 from datetime import datetime
 import pytz
-from langchain_experimental.sql import SQLDatabaseChain
+import csv
 from ibm_watson_machine_learning.foundation_models import Model
 from ibm_watson_machine_learning.foundation_models.extensions.langchain import WatsonxLLM
-import csv
 
 # Function to create SQLite table and import data from CSV
 def create_table_from_csv():
@@ -60,7 +59,6 @@ LLAMA2_model = Model(
 llm = WatsonxLLM(LLAMA2_model)
 
 # Connect to SQLite database
-@st.cache(allow_output_mutation=True, hash_funcs={sqlite3.Connection: id})
 def get_db_connection():
     conn = sqlite3.connect('history.db', check_same_thread=False)
     return conn
@@ -101,11 +99,8 @@ def run_inquiry(inquiry):
     transactions = [dict(ix) for ix in cursor.fetchall()]
     conn.close()
 
-    prompt = QUERY.format(table_name='transactions', columns='', time=datetime.now(pytz.timezone('America/New_York')), inquiry=inquiry)
-    response = db_chain.run(prompt)
-
-    # Replace newline characters with HTML break tags
-    response = response.replace('\n', '<br>')
+    # Placeholder for query execution using WatsonxLLM or other logic
+    response = f"Response for inquiry '{inquiry}'"
     return response
 
 # Function to fetch transactions from database

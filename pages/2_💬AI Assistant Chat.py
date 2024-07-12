@@ -1,5 +1,5 @@
 import streamlit as st
-from .pages.db import *
+from db import *
 from langchain_experimental.sql import SQLDatabaseChain
 from model import llm
 from datetime import datetime

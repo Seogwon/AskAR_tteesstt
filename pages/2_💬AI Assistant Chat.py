@@ -44,17 +44,18 @@ def get_db_connection():
     return conn
 
 # Initialize IBM Watson Machine Learning client
-client = APIClient()
-client.set_apikey("hkEEsPjALuKUCakgA4IuR0SfTyVC9uT0qlQpA15Rcy8U")
-
-# Define your Watson Machine Learning credentials
 wml_credentials = {
     "url": "https://us-south.ml.cloud.ibm.com",
     "apikey": "hkEEsPjALuKUCakgA4IuR0SfTyVC9uT0qlQpA15Rcy8U"
 }
 
-# Initialize IBM Watson Machine Learning client
 client = APIClient(wml_credentials)
+
+# Define model credentials and parameters
+my_credentials = {
+    "url": "https://us-south.ml.cloud.ibm.com",
+    "apikey": "hkEEsPjALuKUCakgA4IuR0SfTyVC9uT0qlQpA15Rcy8U"
+}
 
 params = {
     GenParams.TEMPERATURE: 0.1,

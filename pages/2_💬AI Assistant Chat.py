@@ -27,7 +27,7 @@ LLAMA2_model = Model(
 llm = WatsonxLLM(LLAMA2_model)
 
 # Connect to SQLite database
-@st.cache(allow_output_mutation=True)
+@st.cache(allow_output_mutation=True, hash_funcs={sqlite3.Connection: id})
 def get_db_connection():
     conn = sqlite3.connect('history.db', check_same_thread=False)
     conn.row_factory = sqlite3.Row
@@ -65,9 +65,8 @@ def main():
 # Function to handle inquiry submission
 def run_inquiry(inquiry):
     conn = get_db_connection()
-    cursor = conn.execute('SELECT * FROM transactions ORDER BY InvoiceDate DESC')
+    cursor = conn.execute('SELECT id, * FROM transactions ORDER BY InvoiceDate DESC')
     transactions = [dict(ix) for ix in cursor.fetchall()]
-
     conn.close()
 
     prompt = QUERY.format(table_name='transactions', columns='', time=datetime.now(pytz.timezone('America/New_York')), inquiry=inquiry)
@@ -78,7 +77,7 @@ def run_inquiry(inquiry):
     return response
 
 # Function to fetch transactions from database
-@st.cache(allow_output_mutation=True)
+@st.cache(allow_output_mutation=True, hash_funcs={sqlite3.Connection: id})
 def fetch_transactions():
     conn = get_db_connection()
     cursor = conn.execute('SELECT * FROM transactions ORDER BY InvoiceDate DESC')

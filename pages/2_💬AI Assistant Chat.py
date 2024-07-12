@@ -9,6 +9,8 @@ from ibm_watson_machine_learning.metanames import GenTextParamsMetaNames as GenP
 from datetime import datetime, timezone
 import pytz
 
+st.set_page_config(layout="wide")
+
 # Function to create SQLite table and import data from CSV
 def create_table_from_csv():
     conn = sqlite3.connect('history.db')

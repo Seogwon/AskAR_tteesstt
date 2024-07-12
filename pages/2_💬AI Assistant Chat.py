@@ -74,6 +74,10 @@ def get_db_connection():
 def main():
     st.title('Text-To-Watsonx : Engage AR')
 
+     # 데이터베이스에서 거래 데이터를 가져와 출력
+    transactions = fetch_transactions()
+    st.write(transactions)
+    
     # Introduction section
     st.markdown("""
         Welcome to the Text-To-Watsonx : Engage AR.
@@ -119,7 +123,7 @@ def fetch_transactions():
     conn = get_db_connection()
     cursor = conn.execute('SELECT * FROM transactions ORDER BY InvoiceDate DESC')
     transactions = cursor.fetchall()
-    conn.close()
+    conn.close()  # 이 부분이 제대로 관리되어야 합니다.
     return transactions
 
 if __name__ == '__main__':

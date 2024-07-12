@@ -51,25 +51,11 @@ def main():
     st.markdown("- Show me the list where the collector is Lisa and the category is Yellow.")
 
     # Form for inquiry submission
-    inquiry = st.text_input('Submit an Inquiry:', '', key='inquiry_input', 
-                        help="Enter your inquiry here", 
-                        type='default')
+    inquiry = st.text_input('Submit an Inquiry:', '')
 
-    # Apply custom CSS for the text input box
-    st.markdown(
-    """
-    <style>
-    .st-ec {
-        border-color: black; /* Change border color to black */
-    }
-    </style>
-    """,
-    unsafe_allow_html=True,
-    )
-    
-if st.button('Submit'):
-    response = run_inquiry(inquiry)
-    st.markdown(f"**Response:** {response}")
+    if st.button('Submit'):
+        response = run_inquiry(inquiry)
+        st.markdown(f"**Response:** {response}")
 
     # Display transactions table
     st.markdown("**Transactions:**")

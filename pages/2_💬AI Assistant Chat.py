@@ -1,21 +1,46 @@
-import streamlit as st
-import sqlite3
-import pandas as pd
-import csv
 from ibm_watson_machine_learning import APIClient
 from ibm_watson_machine_learning.foundation_models import Model
 from ibm_watson_machine_learning.foundation_models.extensions.langchain import WatsonxLLM
 from ibm_watson_machine_learning.metanames import GenTextParamsMetaNames as GenParams
-from datetime import datetime, timezone
-import pytz
+import sqlite3
+import pandas as pd
+import csv
+import streamlit as st
 
-st.set_page_config(layout="wide")
+# Initialize IBM Watson Machine Learning client
+wml_credentials = {
+    "url": "https://us-south.ml.cloud.ibm.com",
+    "apikey": "hkEEsPjALuKUCakgA4IuR0SfTyVC9uT0qlQpA15Rcy8U"  # Replace with your actual API key
+}
+
+client = APIClient(wml_credentials)
+
+# Define model credentials and parameters
+my_credentials = {
+    "url": "https://us-south.ml.cloud.ibm.com",
+    "apikey": "hkEEsPjALuKUCakgA4IuR0SfTyVC9uT0qlQpA15Rcy8U"  # Replace with your actual API key
+}
+
+params = {
+    GenParams.TEMPERATURE: 0.1,
+    GenParams.MAX_NEW_TOKENS: 1000,
+}
+
+# Load the WatsonxLLM model
+LLAMA2_model = Model(
+    model_id='meta-llama/llama-2-70b-chat',
+    credentials=my_credentials,
+    params=params,
+    project_id="16acfdcc-378f-4268-a2f4-ba04ca7eca08",
+)
+
+llm = WatsonxLLM(LLAMA2_model)
 
 # Function to create SQLite table and import data from CSV
 def create_table_from_csv():
     conn = sqlite3.connect('history.db')
     c = conn.cursor()
-    
+
     # Create the transactions table if it doesn't exist
     c.execute('''CREATE TABLE IF NOT EXISTS transactions (
                  Category TEXT,
@@ -36,7 +61,7 @@ def create_table_from_csv():
         next(csvreader)  # Skip header
         for row in csvreader:
             c.execute('INSERT INTO transactions VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', row)
-    
+
     conn.commit()
     conn.close()
 
@@ -48,37 +73,8 @@ def get_db_connection():
     conn = sqlite3.connect('history.db', check_same_thread=False)
     return conn
 
-# Initialize IBM Watson Machine Learning client
-wml_credentials = {
-    "url": "https://us-south.ml.cloud.ibm.com",
-    "apikey": "hkEEsPjALuKUCakgA4IuR0SfTyVC9uT0qlQpA15Rcy8U"
-}
-
-client = APIClient(wml_credentials)
-
-# Define model credentials and parameters
-my_credentials = {
-    "url": "https://us-south.ml.cloud.ibm.com",
-    "apikey": "hkEEsPjALuKUCakgA4IuR0SfTyVC9uT0qlQpA15Rcy8U"
-}
-
-params = {
-    GenParams.TEMPERATURE: 0.1,
-    GenParams.MAX_NEW_TOKENS: 1000,
-}
-
-# Load the WatsonxLLM model
-LLAMA2_model = Model(
-    model_id='meta-llama/llama-2-70b-chat',
-    credentials=my_credentials,
-    params=params,
-    project_id="16acfdcc-378f-4268-a2f4-ba04ca7eca08",
-)
-
-llm = WatsonxLLM(LLAMA2_model)
-
 # Function to handle inquiry submission
-# QUERY 템플릿 정의
+# QUERY template definition
 QUERY = """
 <<SYS>> 
 You are a powerful text-to-SQLite model, and your role is to answer questions about a database. You are given questions and context regarding the Invoice details table, which represents the detailed records of currently open invoices.
@@ -110,7 +106,7 @@ Advice: Provide tips here, such as reminding users of progress for invoices with
 <</SYS>>
 """
 
-# run_inquiry 함수 정의
+# run_inquiry function definition
 def run_inquiry(inquiry):
     conn = get_db_connection()
 
@@ -120,14 +116,19 @@ def run_inquiry(inquiry):
     try:
         # Perform model inference with appended QUERY template
         response = llm.invoke(input=query + QUERY)
+        formatted_response = format_llama_response(response)  # Format LLAMA response
     except Exception as e:
-        response = f"Error occurred: {str(e)}"
+        formatted_response = f"Error occurred: {str(e)}"
     
     conn.close()
 
-    return response
+    return formatted_response
 
-
+# Helper function to format LLAMA response
+def format_llama_response(response):
+    # Extract necessary details from LLAMA response and format them
+    # You might need to customize this based on the structure of LLAMA's response
+    return formatted_response
 
 # Function to fetch transactions from database
 def fetch_transactions():
@@ -199,8 +200,6 @@ def main():
         """,
         unsafe_allow_html=True
     )
-     
-
 
 
 if __name__ == '__main__':

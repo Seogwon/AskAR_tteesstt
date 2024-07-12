@@ -89,7 +89,7 @@ def main():
 
     # Display transactions table
     st.markdown("**Transactions:**")
-    transactions = fetch_transactions()[:20]  # Limit to first 20 rows
+    transactions = fetch_transactions()[:21]  # Limit to first 20 rows
     st.table(transactions)
 
 # Function to handle inquiry submission

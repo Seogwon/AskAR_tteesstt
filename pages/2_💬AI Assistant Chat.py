@@ -79,7 +79,7 @@ def run_inquiry(inquiry):
     conn = get_db_connection()
 
     # Create SQL query based on the inquiry text
-    QUERY = """
+    QUERY = f"""
 <<SYS>> 
 You are a powerful text-to-SQLite model, and your role is to answer questions about a database. You are given questions and context regarding the Invoice details table, which represents the detailed records of currently open invoices.
 The table name is {table_name} and corresponding columns are {columns}.
@@ -91,7 +91,7 @@ Guidelines:
 - If a specific category is mentioned in the inquiry, such as 'Yellow', 'Red', or 'Green', use the "WHERE" condition in your SQL query to filter transactions by that category. For example, when asked for the complete invoice details for 'Green', use "FROM transactions WHERE category = 'Green'".
 - If not asked for a specific category, you shouldn't filter any category out. On the other hand, you should use "where" condition to do the filtering. When asked for the average amount in a category, use the SQLite query (AVG(amount) WHERE category = 'category_name').
 - When asked for \'highest\' or \'lowest\', use SQL function MAX() or MIN() respectively.
--If a specific condition is provided in the inquiry, such as mentioning a specific Collector like 'John', 'David', 'Lisa', 'Mary', or 'Michael', and specifying a category such as 'Yellow', 'Red', or 'Green', use the "WHERE" clause in your SQL query to filter transactions accordingly. For example, if you need to fetch invoice details for 'John' and 'Green', you would use "FROM transactions WHERE Collector = 'John' AND category = 'Green'".
+- If a specific condition is provided in the inquiry, such as mentioning a specific Collector like 'John', 'David', 'Lisa', 'Mary', or 'Michael', and specifying a category such as 'Yellow', 'Red', or 'Green', use the "WHERE" clause in your SQL query to filter transactions accordingly. For example, if you need to fetch invoice details for 'John' and 'Green', you would use "FROM transactions WHERE Collector = 'John' AND category = 'Green'".
 
 Use the following format to answer the inquiry:
 
@@ -116,7 +116,7 @@ Advice: Provide tips here, such as reminding users of progress for invoices with
 
     try:
         # Perform model inference
-        response = llm.invoke(input=QUERY)  # Provide the SQL query as input to WatsonxLLM model
+        response = llm.invoke(input=QUERY.format(table_name=table_name, columns=columns, time=datetime.now(pytz.timezone('Asia/Tokyo')), inquiry=inquiry))  # Provide the SQL query as input to WatsonxLLM model
     except Exception as e:
         response = f"Error occurred: {str(e)}"
     

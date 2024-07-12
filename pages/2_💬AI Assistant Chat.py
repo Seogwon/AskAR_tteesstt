@@ -1,10 +1,11 @@
 import streamlit as st
 import sqlite3
+import csv
 from datetime import datetime
 import pytz
-import csv
-from ibm_watson_machine_learning.foundation_models import Model
-from ibm_watson_machine_learning.foundation_models.extensions.langchain import WatsonxLLM
+from db import *
+from langchain_experimental.sql import SQLDatabaseChain
+from model import llm
 
 # Function to create SQLite table and import data from CSV
 def create_table_from_csv():
@@ -38,26 +39,6 @@ def create_table_from_csv():
 # Call the function to create the table and import data
 create_table_from_csv()
 
-# Define your credentials and parameters
-my_credentials = {
-    "url": "https://us-south.ml.cloud.ibm.com",
-    "apikey": "hkEEsPjALuKUCakgA4IuR0SfTyVC9uT0qlQpA15Rcy8U"
-}
-
-params = {
-    'MAX_NEW_TOKENS': 1000,
-    'TEMPERATURE': 0.1,
-}
-
-LLAMA2_model = Model(
-    model_id='meta-llama/llama-2-70b-chat',
-    credentials=my_credentials,
-    params=params,
-    project_id="16acfdcc-378f-4268-a2f4-ba04ca7eca08",
-)
-
-llm = WatsonxLLM(LLAMA2_model)
-
 # Connect to SQLite database
 def get_db_connection():
     conn = sqlite3.connect('history.db', check_same_thread=False)
@@ -78,12 +59,7 @@ def main():
     # Example inquiries section (optional)
     st.markdown("**Example Inquiries:**")
     st.markdown("- What are the items with a due date after today?")
-    st.markdown("- Show me the list where the collector is Lisa and the category is Yellow!")
-    st.markdown("- Show me the list where the collector is David and the forecast code is AUTO!")
-    st.markdown("- Show me the list where the collector is John and the forecast date is after August!")
-    st.markdown("- How many AUTO in Forecastcode per collector?")
-    st.markdown("- How many invoice numbers with due date greater than August 10th 2024?")
-    st.markdown("- How many green per collector in category?")
+    st.markdown("- Show me the list where the collector is Lisa and the category is Yellow.")
 
     # Form for inquiry submission
     inquiry = st.text_input('Submit an Inquiry:', '')
@@ -94,8 +70,29 @@ def main():
 
     # Display transactions table
     st.markdown("**Transactions:**")
-    transactions = fetch_transactions()[:21]  # Limit to first 20 rows
+    transactions = fetch_transactions()[:20]  # Limit to first 20 rows
     st.table(transactions)
+
+    # Custom CSS for table styling
+    st.markdown(
+        """
+        <style>
+        table.dataframe {
+            border: 2px solid #333333; /* Darker gray than default */
+            text-align: center; /* Center align text in cells */
+        }
+        th {
+            border: 2px solid #333333; /* Darker gray than default */
+            text-align: center; /* Center align text in header cells */
+        }
+        td {
+            border: 2px solid #333333; /* Darker gray than default */
+            text-align: center; /* Center align text in data cells */
+        }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
 
 # Function to handle inquiry submission
 def run_inquiry(inquiry):
@@ -104,38 +101,12 @@ def run_inquiry(inquiry):
     transactions = [dict(ix) for ix in cursor.fetchall()]
     conn.close()
 
-    # Placeholder for query execution using WatsonxLLM or other logic
-    response = f"Response for inquiry '{inquiry}'"
-    return response
+    prompt = QUERY.format(table_name='transactions', columns='', time=datetime.now(pytz.timezone('America/New_York')), inquiry=inquiry)
+    response = db_chain.run(prompt)
 
-# Function to fetch transactions from database
-def fetch_transactions():
-    conn = get_db_connection()
-    cursor = conn.execute('SELECT * FROM transactions ORDER BY InvoiceDate DESC')
-    transactions = cursor.fetchall()
-    conn.close()
-    return transactions
+    # Replace newline characters with HTML break tags
+    response = response.replace('\n', '<br>')
+    return response
 
 if __name__ == '__main__':
     main()
-
-# Custom CSS for table styling
-    st.markdown(
-        """
-        <style>
-        table.dataframe {
-            border: 2px solid #5e5e5e; /* Darker gray than default */
-            text-align: center; /* Center align text in cells */
-        }
-        th {
-            border: 2px solid #5e5e5e; /* Darker gray than default */
-            text-align: center; /* Center align text in header cells */
-        }
-        td {
-            border: 2px solid #5e5e5e; /* Darker gray than default */
-            text-align: center; /* Center align text in data cells */
-        }
-        </style>
-        """,
-        unsafe_allow_html=True
-    )

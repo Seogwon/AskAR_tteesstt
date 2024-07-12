@@ -116,9 +116,10 @@ def run_inquiry(inquiry):
 # Function to fetch transactions from database
 @st.cache(allow_output_mutation=True, hash_funcs={sqlite3.Connection: id})
 def fetch_transactions():
-    with closing(get_db_connection()) as conn:
-        cursor = conn.execute('SELECT * FROM transactions ORDER BY InvoiceDate DESC')
-        transactions = cursor.fetchall()
+    conn = get_db_connection()
+    cursor = conn.execute('SELECT * FROM transactions ORDER BY InvoiceDate DESC')
+    transactions = cursor.fetchall()
+    conn.close()
     return transactions
 
 if __name__ == '__main__':

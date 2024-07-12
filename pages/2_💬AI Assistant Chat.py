@@ -1,184 +1,171 @@
 import streamlit as st
-from utils.constants import *
-import torch
-from llama_index import (GPTVectorStoreIndex, SimpleDirectoryReader, LLMPredictor, ServiceContext)
-from langchain.embeddings import HuggingFaceInstructEmbeddings
-from llama_index.embeddings.langchain import LangchainEmbedding  # Correct import
-from ibm_watson_machine_learning.foundation_models.extensions.langchain import WatsonxLLM
-from ibm_watson_machine_learning.foundation_models.utils.enums import ModelTypes, DecodingMethods
-from ibm_watson_machine_learning.metanames import GenTextParamsMetaNames as GenParams
+from datetime import datetime
+import pytz
+from langchain.utilities import SQLDatabase
+from langchain_experimental.sql import SQLDatabaseChain
+import sqlite3
+import csv
+
 from ibm_watson_machine_learning.foundation_models import Model
+from ibm_watson_machine_learning.foundation_models.extensions.langchain import WatsonxLLM
+from ibm_watson_machine_learning.metanames import GenTextParamsMetaNames as GenParams
+from ibm_watson_machine_learning.foundation_models.utils.enums import DecodingMethods
 
-st.title("💬 Chat with My AI Assistant")
-def local_css(file_name):
-    with open(file_name) as f:
-        st.markdown('<style>{}</style>'.format(f.read()), unsafe_allow_html=True)
-        
-local_css("styles/styles_chat.css")
+# Define LLM class and instantiate llm object
+class LLM:
+    def __init__(self):
+        my_credentials = {
+            "url": "https://us-south.ml.cloud.ibm.com",
+            "apikey": "hkEEsPjALuKUCakgA4IuR0SfTyVC9uT0qlQpA15Rcy8U"
+        }
 
-# Get the variables from constants.py
-pronoun = info['Pronoun']
-name = info['Name']
-subject = info['Subject']
-full_name = info['Full_Name']
-
-# Initialize the chat history
-if "messages" not in st.session_state:
-    welcome_msg = f"Hi! I'm {name}'s AI Assistant, Buddy. How may I assist you today?"
-    st.session_state.messages = [{"role": "assistant", "content": welcome_msg}]
-
-# App sidebar
-with st.sidebar:
-    st.markdown("""
-                # Chat with my AI assistant
-                """)
-    with st.expander("Click here to see FAQs"):
-        st.info(
-            f"""
-            - What are {pronoun} strengths and weaknesses?
-            - What is {pronoun} expected salary?
-            - What is {pronoun} latest project?
-            - When can {subject} start to work?
-            - Tell me about {pronoun} professional background
-            - What is {pronoun} skillset?
-            - What is {pronoun} contact?
-            - What are {pronoun} achievements?
-            """
-        )
-    
-    import json
-    messages = st.session_state.messages
-    if messages is not None:
-        st.download_button(
-            label="Download Chat",
-            data=json.dumps(messages),
-            file_name='chat.json',
-            mime='json',
-        )
-
-    st.caption(f"© Made by {full_name} 2023. All rights reserved.")
-
-
-with st.spinner("Initiating the AI assistant. Please hold..."):
-    # Check for GPU availability and set the appropriate device for computation.
-    DEVICE = "cuda:0" if torch.cuda.is_available() else "cpu"
-    
-    # Global variables
-    llm_hub = None
-    embeddings = None
-    
-    Watsonx_API = "w3tA2Es6y0R5z5t2EMhI6sxEarmloP3WnrY902iC81uL"
-    Project_id= "16acfdcc-378f-4268-a2f4-ba04ca7eca08"
-
-    # Function to initialize the language model and its embeddings
-    def init_llm():
-        global llm_hub, embeddings
-        
         params = {
-            GenParams.MAX_NEW_TOKENS: 1000, # The maximum number of tokens that the model can generate in a single run.
-            GenParams.MIN_NEW_TOKENS: 1,   # The minimum number of tokens that the model should generate in a single run.
-            GenParams.DECODING_METHOD: DecodingMethods.SAMPLE, # The method used by the model for decoding/generating new tokens. In this case, it uses the sampling method.
-            GenParams.TEMPERATURE: 0.7,   # A parameter that controls the randomness of the token generation. A lower value makes the generation more deterministic, while a higher value introduces more randomness.
-            GenParams.TOP_K: 50,          # The top K parameter restricts the token generation to the K most likely tokens at each step, which can help to focus the generation and avoid irrelevant tokens.
-            GenParams.TOP_P: 1            # The top P parameter, also known as nucleus sampling, restricts the token generation to a subset of tokens that have a cumulative probability of at most P, helping to balance between diversity and quality of the generated text.
+            GenParams.MAX_NEW_TOKENS: 1000,
+            GenParams.TEMPERATURE: 0.1,
+            GenParams.DECODING_METHOD: DecodingMethods.SAMPLE,
+            GenParams.TOP_K: 50,
+            GenParams.TOP_P: 1
         }
-        
-        credentials = {
-            'url': "https://us-south.ml.cloud.ibm.com",
-            'apikey' : Watsonx_API
-        }
-    
-        model_id = ModelTypes.LLAMA_2_70B_CHAT
-        
-        model = Model(
-            model_id= model_id,
-            credentials=credentials,
+
+        LLAMA2_model = Model(
+            model_id='meta-llama/llama-2-70b-chat',
+            credentials=my_credentials,
             params=params,
-            project_id=Project_id)
-    
-        llm_hub = WatsonxLLM(model=model)
-    
-        #Initialize embeddings using a pre-trained model to represent the text data.
-        embeddings = HuggingFaceInstructEmbeddings(
-            model_name="sentence-transformers/all-MiniLM-L6-v2", model_kwargs={"device": DEVICE}
+            project_id="16acfdcc-378f-4268-a2f4-ba04ca7eca08",
         )
-    
-    init_llm()
-    
-    # load the file
-    documents = SimpleDirectoryReader(input_files=["bio.txt"]).load_data()
-    
-    # LLMPredictor: to generate the text response (Completion)
-    llm_predictor = LLMPredictor(
-            llm=llm_hub
+
+        self.llm = WatsonxLLM(LLAMA2_model)
+
+# Initialize LLM object
+llm_object = LLM()
+
+# Initialize SQLDatabase instance
+db = SQLDatabase.from_uri("sqlite:///history.db")
+
+# Function to connect to SQLite database
+def get_db_connection():
+    conn = sqlite3.connect('history.db', check_same_thread=False)
+    conn.row_factory = sqlite3.Row
+    return conn
+
+# Initialize database and populate with initial data
+def init_db():
+    conn = get_db_connection()
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS transactions (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            Category TEXT,
+            CustomerName TEXT,
+            CustomerNumber TEXT,
+            InvoiceNumber TEXT,
+            InvoiceAmount INTEGER,
+            InvoiceDate DATE,
+            DueDate DATE,
+            ForecastCode TEXT,
+            ForecastDate DATE,
+            Collector TEXT
+        );
+    """)
+
+    if conn.execute('SELECT COUNT(*) FROM transactions').fetchone()[0] == 0:
+        with open('transactions.csv', 'r') as file:
+            reader = csv.reader(file)
+            next(reader)  # Skip the header row
+            sample_data = list(reader)
+            conn.executemany('INSERT INTO transactions (Category, CustomerName, CustomerNumber, InvoiceNumber, InvoiceAmount, InvoiceDate, DueDate, ForecastCode, ForecastDate, Collector) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', sample_data)
+
+    conn.commit()
+    conn.close()
+
+# Initialize database
+init_db()
+
+# Initialize LLM and embeddings
+def init_llm():
+    params = {
+        GenParams.MAX_NEW_TOKENS: 1000,
+        GenParams.MIN_NEW_TOKENS: 1,
+        GenParams.DECODING_METHOD: DecodingMethods.SAMPLE,
+        GenParams.TEMPERATURE: 0,
+        GenParams.TOP_K: 50,
+        GenParams.TOP_P: 1
+    }
+
+    credentials = {
+        'url': "https://us-south.ml.cloud.ibm.com",
+        'apikey' : "w3tA2Es6y0R5z5t2EMhI6sxEarmloP3WnrY902iC81uL"
+    }
+
+    model = Model(
+        model_id= 'meta-llama/llama-2-70b-chat',
+        credentials=credentials,
+        params=params,
+        project_id="16acfdcc-378f-4268-a2f4-ba04ca7eca08"
     )
-                                    
-    # Hugging Face models can be supported by using LangchainEmbedding to convert text to embedding vector	
-    embed_model = LangchainEmbedding(embeddings)
-    
-    # ServiceContext: to encapsulate the resources used to create indexes and run queries    
-    service_context = ServiceContext.from_defaults(
-            llm_predictor=llm_predictor, 
-            embed_model=embed_model
-    )      
-    # build index
-    index = GPTVectorStoreIndex.from_documents(documents, service_context=service_context)
 
-def ask_bot(user_query):
+    llm_hub = WatsonxLLM(model=model)
+    return llm_hub
 
-    global index
+# Correctly initialize SQLDatabaseChain instance
+llm_hub = init_llm()
+db_chain = SQLDatabaseChain(llm=llm_hub, database=db, verbose=True)
 
-    PROMPT_QUESTION = """You are Buddy, an AI assistant dedicated to assisting {name} in {pronoun} job search by providing recruiters with relevant information about {pronoun} qualifications and achievements. 
-    Your goal is to support {name} in presenting {pronoun}self effectively to potential employers and promoting {pronoun} candidacy for job opportunities.
-    If you do not know the answer, politely admit it and let recruiters know how to contact {name} to get more information directly from {pronoun}. 
-    Don't put "Buddy" or a breakline in the front of your answer.
-    Human: {input}
+# Function to fetch transactions from database
+def fetch_transactions():
+    conn = get_db_connection()
+    cursor = conn.execute('SELECT id, * FROM transactions ORDER BY InvoiceDate DESC')
+    transactions = [dict(ix) for ix in cursor.fetchall()]
+    conn.close()
+    return transactions
+
+# Main function to handle inquiry submission
+def handle_inquiry(inquiry):
+    prompt = f"""
+    <<SYS>>
+    You are a powerful text-to-SQLite model, and your role is to answer questions about a database. You are given questions and context regarding the Invoice details table, which represents the detailed records of currently open invoices.
+    The table name is transactions and corresponding columns are id, *.
+    You must run SQLite queries to the table to find an answer. Ensure your query does not include any non-SQLite syntax such as DATE_TRUNC or any use of backticks (`) or "```sql". Then, execute this query against the 'transactions' table and provide the answer.
+
+    Guidelines:
+    - Filter results using the current time zone: {datetime.now(pytz.timezone('America/New_York'))} only when query specifies a specific date/time period. You should use ">=" or "<=" operators to filter the date or use "GROUP BY strftime('%m', date)" for grouping into month.  Assume the date format in the database is 'YYYY-MM-DD'.
+    - If the query result is [(None,)], run the SQLite query again to double check the answer.
+    - If a specific category is mentioned in the inquiry, such as 'Yellow', 'Red', or 'Green', use the "WHERE" condition in your SQL query to filter transactions by that category. For example, when asked for the complete invoice details for 'Green', use "FROM transactions WHERE category = 'Green'".
+    - If not asked for a specific category, you shouldn't filter any category out. On the other hand, you should use "where" condition to do the filtering. When asked for the average amount in a category, use the SQLite query (AVG(amount) WHERE category = 'category_name').
+    - When asked for 'highest' or 'lowest', use SQL function MAX() or MIN() respectively.
+    - If a specific condition is provided in the inquiry, such as mentioning a specific Collector like 'John', 'David', 'Lisa', 'Mary', or 'Michael', and specifying a category such as 'Yellow', 'Red', or 'Green', use the "WHERE" clause in your SQL query to filter transactions accordingly. For example, if you need to fetch invoice details for 'John' and 'Green', you would use "FROM transactions WHERE Collector = 'John' AND category = 'Green'".
+
+    Use the following format to answer the inquiry:
+
+    Response: Result of the SQLite-compatible SQL query. If you know the transaction details such as the Category, Customer Name, Customer #, Inv. #, Inv. Amt, Inv. Date, Due Date, Forecast Code, Forecast Date, and Collector, mention it in your answer to be more clear.
+    ---------------------- line break
+    <br>
+    ---------------------- line break
+    <br>
+    Explanation: Concise and succinct explanation on your thought process on how to get the final answer including the relevant transaction details such as the Category, Customer Name, Customer #, Inv. #, Inv. Amt, Inv. Date, Due Date, Forecast Code, Forecast Date, and Collector.
+    ---------------------- line break
+    <br>
+    ---------------------- line break
+    <br>
+    Advice: Provide tips here, such as reminding users of progress for invoices with a due date within 10 days by comparing the due date with today.
+
+    <</SYS>>
+
+    {inquiry}
     """
-    
-    # query LlamaIndex and LLAMA_2_70B_CHAT for the AI's response
-    output = index.as_query_engine().query(PROMPT_QUESTION.format(name=name, pronoun=pronoun, input=user_query))
-    return output
+    response = db_chain.run(prompt)
 
-# After the user enters a message, append that message to the message history
-if prompt := st.chat_input("Your question"): # Prompt for user input and save to chat history
-    st.session_state.messages.append({"role": "user", "content": prompt})
+    response = response.replace('\n', '<br>')
 
-# Iterate through the message history and display each message
-for message in st.session_state.messages: 
-    with st.chat_message(message["role"]):
-        st.write(message["content"])
+    return response
 
-# If the last message is not from the assistant, generate a new response
-if st.session_state.messages[-1]["role"] != "assistant":
-    with st.chat_message("assistant"):
-        with st.spinner("🤔 Thinking..."):
-            response = ask_bot(prompt)
-            st.write(response.response)
-            message = {"role": "assistant", "content": response.response}
-            st.session_state.messages.append(message) # Add response to message history
+# Streamlit UI components
+st.title('Invoice Inquiry System')
+inquiry = st.text_area('Enter your inquiry:')
+if st.button('Submit'):
+    response = handle_inquiry(inquiry)
+    st.markdown(f"**Response:** {response}")
 
-# Suggested questions
-questions = [
-    f'What are {pronoun} strengths and weaknesses?',
-    f'What is {pronoun} latest project?',
-    f'When can {subject} start to work?'
-]
-
-def send_button_ques(question):
-    st.session_state.disabled = True
-    response = ask_bot(question)
-    st.session_state.messages.append({"role": "user", "content": question}) # display the user's message first
-    st.session_state.messages.append({"role": "assistant", "content": response.response}) # display the AI message afterwards
-    
-if 'button_question' not in st.session_state:
-    st.session_state['button_question'] = ""
-if 'disabled' not in st.session_state:
-    st.session_state['disabled'] = False
-    
-if st.session_state['disabled']==False: 
-    for n, msg in enumerate(st.session_state.messages):
-        # Render suggested question buttons
-        buttons = st.container()
-        if n == 0:
-            for q in questions:
-                button_ques = buttons.button(label=q, on_click=send_button_ques, args=[q], disabled=st.session_state.disabled)
+# Display transactions
+transactions = fetch_transactions()
+st.write('Recent Transactions:')
+st.write(transactions)

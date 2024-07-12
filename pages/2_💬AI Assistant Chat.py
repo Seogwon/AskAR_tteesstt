@@ -7,6 +7,11 @@ from ibm_watson_machine_learning.foundation_models import Model
 from ibm_watson_machine_learning.foundation_models.extensions.langchain import WatsonxLLM
 import csv
 
+#
+from contextlib import closing
+#
+
+
 # Define your credentials and parameters
 my_credentials = {
     "url": "https://us-south.ml.cloud.ibm.com",
@@ -79,10 +84,9 @@ def run_inquiry(inquiry):
 # Function to fetch transactions from database
 @st.cache(allow_output_mutation=True, hash_funcs={sqlite3.Connection: id})
 def fetch_transactions():
-    conn = get_db_connection()
-    cursor = conn.execute('SELECT * FROM transactions ORDER BY InvoiceDate DESC')
-    transactions = cursor.fetchall()
-    conn.close()
+    with closing(get_db_connection()) as conn:
+        cursor = conn.execute('SELECT * FROM transactions ORDER BY InvoiceDate DESC')
+        transactions = cursor.fetchall()
     return transactions
 
 if __name__ == '__main__':

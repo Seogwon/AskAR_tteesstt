@@ -44,8 +44,6 @@ def init_db():
 
 init_db()
 
-print(db.table_info)
-
 def get_table_columns(table_name):
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -53,6 +51,3 @@ def get_table_columns(table_name):
     columns = cursor.fetchall()
     print(f"columns:{columns}")
     return [column[1] for column in columns]
-
-table_name = 'transactions'
-columns = get_table_columns(table_name)

@@ -113,3 +113,21 @@ def fetch_transactions():
 
 if __name__ == '__main__':
     main()
+
+# Custom CSS for table borders
+st.markdown(
+    """
+    <style>
+    table.dataframe {
+        border: 2px solid black;
+    }
+    th {
+        border: 2px solid black;
+    }
+    td {
+        border: 2px solid black;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)

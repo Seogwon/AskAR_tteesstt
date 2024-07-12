@@ -1,7 +1,6 @@
 import streamlit as st
 import sqlite3
 import csv
-from ibm_watson_machine_learning import APIClient
 from ibm_watson_machine_learning.foundation_models import Model
 from ibm_watson_machine_learning.foundation_models.extensions.langchain import WatsonxLLM
 from ibm_watson_machine_learning.metanames import GenTextParamsMetaNames as GenParams

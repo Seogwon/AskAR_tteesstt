@@ -38,9 +38,6 @@ def create_table_from_csv():
 
 # Call the function to create the table and import data
 create_table_from_csv()
-#
-
-
 
 # Define your credentials and parameters
 my_credentials = {
@@ -72,10 +69,6 @@ def get_db_connection():
 def main():
     st.title('Text-To-Watsonx : Engage AR')
 
-     # 데이터베이스에서 거래 데이터를 가져와 출력
-    transactions = fetch_transactions()
-    st.write(transactions)
-    
     # Introduction section
     st.markdown("""
         Welcome to the Text-To-Watsonx : Engage AR.

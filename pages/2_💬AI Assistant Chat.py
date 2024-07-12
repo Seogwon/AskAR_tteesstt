@@ -88,7 +88,12 @@ def run_inquiry(inquiry):
 
     try:
         # Perform model inference with WatsonxLLM
-        response = llm.generate_text(prompt=query)
+        invocation_payload = {
+            "input_data": [{
+                "values": [query]
+            }]
+        }
+        response = client.deployments.score(LLAMA2_model.uid, invocation_payload)
     except Exception as e:
         response = f"Error occurred: {str(e)}"
     

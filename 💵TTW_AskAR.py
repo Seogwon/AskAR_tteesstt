@@ -57,11 +57,11 @@ with col1:
     from streamlit_extras.switch_page_button import switch_page
     col_1, col_2, temp = st.columns([0.35,0.2,0.45])
     with col_1:
-        btn1 = st.button("Chat with My AI Assistant")
+        btn1 = st.button("Feel free to ask anything about AR")
         if btn1:
             switch_page("AI_Assistant_Chat")
     with col_2:
-        btn2 = st.button("My Resume")
+        btn2 = st.button("Raw data")
         if btn2:
             switch_page("Resume")
 

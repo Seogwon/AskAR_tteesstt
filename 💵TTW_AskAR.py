@@ -61,9 +61,9 @@ with col1:
         if btn1:
             switch_page("AI_Assistant_Chat")
     with col_2:
-        btn2 = st.button("Raw data")
+        btn2 = st.button("Raw Data")
         if btn2:
-            switch_page("Resume")
+            switch_page("Raw Data")
 
 import streamlit.components.v1 as components
 

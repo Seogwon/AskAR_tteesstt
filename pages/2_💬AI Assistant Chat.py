@@ -7,8 +7,6 @@ from ibm_watson_machine_learning.foundation_models import Model
 from ibm_watson_machine_learning.foundation_models.extensions.langchain import WatsonxLLM
 import csv
 
-#
-from contextlib import closing
 # Function to create SQLite table and import data from CSV
 def create_table_from_csv():
     conn = sqlite3.connect('history.db')

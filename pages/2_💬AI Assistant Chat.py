@@ -1,9 +1,10 @@
 import streamlit as st
 import sqlite3
-from datetime import datetime
 import csv
+from ibm_watson_machine_learning import APIClient
 from ibm_watson_machine_learning.foundation_models import Model
 from ibm_watson_machine_learning.foundation_models.extensions.langchain import WatsonxLLM
+from ibm_watson_machine_learning.metanames import GenTextParamsMetaNames as GenParams
 
 # Function to create SQLite table and import data from CSV
 def create_table_from_csv():
@@ -37,6 +38,15 @@ def create_table_from_csv():
 # Call the function to create the table and import data
 create_table_from_csv()
 
+# Connect to SQLite database
+def get_db_connection():
+    conn = sqlite3.connect('history.db', check_same_thread=False)
+    return conn
+
+# Initialize IBM Watson Machine Learning client
+client = APIClient()
+client.set_apikey("hkEEsPjALuKUCakgA4IuR0SfTyVC9uT0qlQpA15Rcy8U")
+
 # Define your credentials and parameters
 my_credentials = {
     "url": "https://us-south.ml.cloud.ibm.com",
@@ -44,10 +54,11 @@ my_credentials = {
 }
 
 params = {
-    'MAX_NEW_TOKENS': 1000,
-    'TEMPERATURE': 0.1,
+    GenParams.TEMPERATURE: 0.1,
+    GenParams.MAX_NEW_TOKENS: 1000,
 }
 
+# Load the WatsonxLLM model
 LLAMA2_model = Model(
     model_id='meta-llama/llama-2-70b-chat',
     credentials=my_credentials,
@@ -57,11 +68,6 @@ LLAMA2_model = Model(
 
 llm = WatsonxLLM(LLAMA2_model)
 
-# Connect to SQLite database
-def get_db_connection():
-    conn = sqlite3.connect('history.db', check_same_thread=False)
-    return conn
-
 # Function to handle inquiry submission
 def run_inquiry(inquiry):
     conn = get_db_connection()
@@ -70,8 +76,8 @@ def run_inquiry(inquiry):
     QUERY = f"""SELECT * FROM transactions WHERE {inquiry} ORDER BY InvoiceDate DESC"""
     
     try:
-        # Placeholder for query execution using WatsonxLLM or other logic
-        response = llm.run(prompt=QUERY)
+        # Perform model inference
+        response = llm.invoke(prompt=QUERY)
     except Exception as e:
         response = f"Error occurred: {str(e)}"
     

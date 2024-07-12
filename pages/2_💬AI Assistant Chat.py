@@ -119,15 +119,15 @@ if __name__ == '__main__':
         """
         <style>
         table.dataframe {
-            border: 2px solid #404040; /* Darker gray than default */
+            border: 2px solid #5e5e5e; /* Darker gray than default */
             text-align: center; /* Center align text in cells */
         }
         th {
-            border: 2px solid #404040; /* Darker gray than default */
+            border: 2px solid #5e5e5e; /* Darker gray than default */
             text-align: center; /* Center align text in header cells */
         }
         td {
-            border: 2px solid #404040; /* Darker gray than default */
+            border: 2px solid #5e5e5e; /* Darker gray than default */
             text-align: center; /* Center align text in data cells */
         }
         </style>

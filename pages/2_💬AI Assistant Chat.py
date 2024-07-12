@@ -65,8 +65,9 @@ def main():
 # Function to handle inquiry submission
 def run_inquiry(inquiry):
     conn = get_db_connection()
-    cursor = conn.execute('SELECT id, * FROM transactions ORDER BY InvoiceDate DESC')
+    cursor = conn.execute('SELECT * FROM transactions ORDER BY InvoiceDate DESC')
     transactions = [dict(ix) for ix in cursor.fetchall()]
+
     conn.close()
 
     prompt = QUERY.format(table_name='transactions', columns='', time=datetime.now(pytz.timezone('America/New_York')), inquiry=inquiry)

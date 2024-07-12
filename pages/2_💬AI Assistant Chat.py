@@ -67,15 +67,15 @@ with st.spinner("Initiating the AI assistant. Please hold..."):
     llm_hub = None
     embeddings = None
     
-    Watsonx_API = "WX-fh0WLD6Ydj4m671cxUqZOqb9MbOTbOYeoVYw9tjYh"
-    Project_id= "21f39c9c-53aa-490d-9966-2a373e0ad09a"
+    Watsonx_API = "w3tA2Es6y0R5z5t2EMhI6sxEarmloP3WnrY902iC81uL"
+    Project_id= "16acfdcc-378f-4268-a2f4-ba04ca7eca08"
 
     # Function to initialize the language model and its embeddings
     def init_llm():
         global llm_hub, embeddings
         
         params = {
-            GenParams.MAX_NEW_TOKENS: 512, # The maximum number of tokens that the model can generate in a single run.
+            GenParams.MAX_NEW_TOKENS: 1000, # The maximum number of tokens that the model can generate in a single run.
             GenParams.MIN_NEW_TOKENS: 1,   # The minimum number of tokens that the model should generate in a single run.
             GenParams.DECODING_METHOD: DecodingMethods.SAMPLE, # The method used by the model for decoding/generating new tokens. In this case, it uses the sampling method.
             GenParams.TEMPERATURE: 0.7,   # A parameter that controls the randomness of the token generation. A lower value makes the generation more deterministic, while a higher value introduces more randomness.

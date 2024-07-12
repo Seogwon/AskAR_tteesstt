@@ -126,9 +126,10 @@ def run_inquiry(inquiry):
 
 # Helper function to format LLAMA response
 def format_llama_response(response):
-    # Extract necessary details from LLAMA response and format them
-    # You might need to customize this based on the structure of LLAMA's response
+    result = response['predictions'][0]['generated_text']  # 예시로, LLAMA 응답에서 텍스트 생성 부분을 추출
+    formatted_response = f"Response: {result}\n<br>\nExplanation: Explanation goes here.\n<br>\nAdvice: Tips for users."
     return formatted_response
+
 
 # Function to fetch transactions from database
 def fetch_transactions():

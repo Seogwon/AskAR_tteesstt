@@ -2,15 +2,8 @@ import streamlit as st
 import sqlite3
 from datetime import datetime
 import pytz
-from langchain_experimental.sql import SQLDatabaseChain
-from ibm_watson_machine_learning.foundation_models import Model
-from ibm_watson_machine_learning.foundation_models.extensions.langchain import WatsonxLLM
-
+import csv
 import os
-
-# 현재 스크립트 파일의 디렉토리 경로 가져오기
-current_dir = os.path.dirname(__file__)
-csv_file_path = os.path.join(current_dir, 'pages', 'transactions.csv')
 
 # Define your credentials and parameters
 my_credentials = {
@@ -22,6 +15,9 @@ params = {
     'MAX_NEW_TOKENS': 1000,
     'TEMPERATURE': 0.1,
 }
+
+# Define path to CSV file
+csv_file_path = os.path.join(os.path.dirname(__file__), 'pages', 'transactions.csv')
 
 LLAMA2_model = Model(
     model_id='meta-llama/llama-2-70b-chat',
@@ -38,9 +34,47 @@ def get_db_connection():
     conn = sqlite3.connect('history.db', check_same_thread=False)
     return conn
 
+# Function to create transactions table if not exists
+def create_transactions_table(conn):
+    cursor = conn.cursor()
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS transactions (
+            id INTEGER PRIMARY KEY,
+            InvoiceDate TEXT,
+            -- Add other columns as needed
+        )
+    ''')
+    conn.commit()
+
+# Function to insert data from CSV file into SQLite database
+def insert_data_from_csv(conn, csv_file_path):
+    create_transactions_table(conn)
+
+    try:
+        with open(csv_file_path, 'r', encoding='utf-8') as f:
+            csv_reader = csv.reader(f)
+            next(csv_reader)  # Skip header row
+            for row in csv_reader:
+                cursor = conn.cursor()
+                cursor.execute('''
+                    INSERT INTO transactions (InvoiceDate, ...)  -- Add other columns
+                    VALUES (?, ...)  -- Match CSV columns
+                ''', tuple(row))
+        conn.commit()
+    except FileNotFoundError:
+        st.error(f"CSV file '{csv_file_path}' not found.")
+    except Exception as e:
+        st.error(f"Error inserting data from CSV: {str(e)}")
+
 # Initialize Streamlit app
 def main():
     st.title('Text-To-Watsonx : Engage AR')
+
+    # Connect to SQLite database
+    conn = get_db_connection()
+
+    # Insert data from CSV file into SQLite database
+    insert_data_from_csv(conn, csv_file_path)
 
     # Introduction section
     st.markdown("""
@@ -59,20 +93,21 @@ def main():
     inquiry = st.text_input('Submit an Inquiry:', '')
 
     if st.button('Submit'):
-        response = run_inquiry(inquiry)
+        response = run_inquiry(inquiry, conn)
         st.markdown(f"**Response:** {response}")
 
     # Display transactions table
     st.markdown("**Transactions:**")
-    transactions = fetch_transactions()
+    transactions = fetch_transactions(conn)
     st.table(transactions)
 
+    # Close database connection
+    conn.close()
+
 # Function to handle inquiry submission
-def run_inquiry(inquiry):
-    conn = get_db_connection()
+def run_inquiry(inquiry, conn):
     cursor = conn.execute('SELECT id, * FROM transactions ORDER BY InvoiceDate DESC')
     transactions = [dict(ix) for ix in cursor.fetchall()]
-    conn.close()
 
     prompt = QUERY.format(table_name='transactions', columns='', time=datetime.now(pytz.timezone('America/New_York')), inquiry=inquiry)
     response = db_chain.run(prompt)
@@ -83,11 +118,9 @@ def run_inquiry(inquiry):
 
 # Function to fetch transactions from database
 @st.cache(allow_output_mutation=True, hash_funcs={sqlite3.Connection: id})
-def fetch_transactions():
-    conn = get_db_connection()
+def fetch_transactions(conn):
     cursor = conn.execute('SELECT * FROM transactions ORDER BY InvoiceDate DESC')
     transactions = cursor.fetchall()
-    conn.close()
     return transactions
 
 if __name__ == '__main__':

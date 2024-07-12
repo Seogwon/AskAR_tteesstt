@@ -6,6 +6,7 @@ import sqlite3
 import pandas as pd
 import csv
 import streamlit as st
+import json
 
 # Initialize IBM Watson Machine Learning client
 wml_credentials = {
@@ -126,8 +127,13 @@ def run_inquiry(inquiry):
 
 # Helper function to format LLAMA response
 def format_llama_response(response):
-    result = response['predictions'][0]['generated_text']  # 예시로, LLAMA 응답에서 텍스트 생성 부분을 추출
-    formatted_response = f"Response: {result}\n<br>\nExplanation: Explanation goes here.\n<br>\nAdvice: Tips for users."
+    try:
+        json_response = json.loads(response)  # LLAMA 응답을 JSON 객체로 변환
+        result = json_response['predictions'][0]['generated_text']  # 예시로, LLAMA 응답에서 텍스트 생성 부분을 추출
+        formatted_response = f"Response: {result}\n<br>\nExplanation: Explanation goes here.\n<br>\nAdvice: Tips for users."
+    except Exception as e:
+        formatted_response = f"Error occurred: {str(e)}"
+    
     return formatted_response
 
 

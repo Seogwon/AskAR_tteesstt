@@ -19,7 +19,7 @@ pronoun = info['Pronoun']
 # app sidebar
 with st.sidebar:
     st.markdown("""
-                # Chat with my AI assistant
+                # FAQ
                 """)
     with st.expander("Click here to see FAQs"):
         st.info(

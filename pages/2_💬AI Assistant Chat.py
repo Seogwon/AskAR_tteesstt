@@ -6,8 +6,6 @@ from ibm_watson_machine_learning import APIClient
 from ibm_watson_machine_learning.foundation_models import Model
 from ibm_watson_machine_learning.foundation_models.extensions.langchain import WatsonxLLM
 from ibm_watson_machine_learning.metanames import GenTextParamsMetaNames as GenParams
-from datetime import datetime, timezone
-import pytz
 
 st.set_page_config(layout="wide")
 
@@ -78,7 +76,6 @@ LLAMA2_model = Model(
 llm = WatsonxLLM(LLAMA2_model)
 
 # Function to handle inquiry submission
-# QUERY 템플릿 정의
 QUERY = """
 <<SYS>> 
 You are a powerful text-to-SQLite model, and your role is to answer questions about a database. You are given questions and context regarding the Invoice details table, which represents the detailed records of currently open invoices.
@@ -90,8 +87,8 @@ Guidelines:
 - If the query result is [(None,)], run the SQLite query again to double check the answer. 
 - If a specific category is mentioned in the inquiry, such as 'Yellow', 'Red', or 'Green', use the "WHERE" condition in your SQL query to filter transactions by that category. For example, when asked for the complete invoice details for 'Green', use "FROM transactions WHERE category = 'Green'".
 - If not asked for a specific category, you shouldn't filter any category out. On the other hand, you should use "where" condition to do the filtering. When asked for the average amount in a category, use the SQLite query (AVG(amount) WHERE category = 'category_name').
-- When asked for \'highest\' or \'lowest\', use SQL function MAX() or MIN() respectively.
--If a specific condition is provided in the inquiry, such as mentioning a specific Collector like 'John', 'David', 'Lisa', 'Mary', or 'Michael', and specifying a category such as 'Yellow', 'Red', or 'Green', use the "WHERE" clause in your SQL query to filter transactions accordingly. For example, if you need to fetch invoice details for 'John' and 'Green', you would use "FROM transactions WHERE Collector = 'John' AND category = 'Green'".
+- When asked for 'highest' or 'lowest', use SQL function MAX() or MIN() respectively.
+- If a specific condition is provided in the inquiry, such as mentioning a specific Collector like 'John', 'David', 'Lisa', 'Mary', or 'Michael', and specifying a category such as 'Yellow', 'Red', or 'Green', use the "WHERE" clause in your SQL query to filter transactions accordingly. For example, if you need to fetch invoice details for 'John' and 'Green', you would use "FROM transactions WHERE Collector = 'John' AND category = 'Green'".
 
 Use the following format to answer the inquiry:
 
@@ -110,7 +107,7 @@ Advice: Provide tips here, such as reminding users of progress for invoices with
 <</SYS>>
 """
 
-# run_inquiry 함수 정의
+# Run inquiry function
 def run_inquiry(inquiry):
     conn = get_db_connection()
 
@@ -126,8 +123,6 @@ def run_inquiry(inquiry):
     conn.close()
 
     return response
-
-
 
 # Function to fetch transactions from database
 def fetch_transactions():
@@ -156,7 +151,7 @@ def main():
         **Important: AI responses can vary, you might need to fine-tune your prompt template or LLM for improved results.**
     """)
 
-    # Example inquiries section (optional)
+    # Example inquiries section
     st.markdown("**Example Inquiries:**")
     st.markdown("- What are the items with a due date after today?")
     st.markdown("- Show me the list where the collector is Lisa and the category is Yellow!")
@@ -199,9 +194,6 @@ def main():
         """,
         unsafe_allow_html=True
     )
-     
-
-
 
 if __name__ == '__main__':
     main()

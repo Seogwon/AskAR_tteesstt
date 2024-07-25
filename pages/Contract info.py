@@ -34,7 +34,7 @@ with st.sidebar:
         
     st.caption(f"© Made by CSL_Test 2024. All rights reserved.")
  
-st.title("📝 Raw Data")
+st.title("📝 Contract info")
 
 st.write(f"[Click here if it's blocked by your browser]({info['Resume']})")
 

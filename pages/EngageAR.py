@@ -7,6 +7,8 @@ from ibm_watson_machine_learning.foundation_models import Model
 from ibm_watson_machine_learning.foundation_models.extensions.langchain import WatsonxLLM
 from ibm_watson_machine_learning.metanames import GenTextParamsMetaNames as GenParams
 
+import numpy as np
+
 st.set_page_config(layout="wide")
 
 # Function to create SQLite table and import data from CSV
@@ -146,20 +148,36 @@ def main():
     # Introduction section
     st.markdown("""
         Welcome to the Text-To-Watsonx : Engage AR.
+                
         Here, you can inquire about various aspects of Engage AR transactions.
         Use the example queries as a guide to format your questions.
+                
         **Important: AI responses can vary, you might need to fine-tune your prompt template or LLM for improved results.**
     """)
 
-    # Example inquiries section
-    st.markdown("**Example Inquiries:**")
-    st.markdown("- What are the items with a due date after today?")
-    st.markdown("- Show me the list where the collector is Lisa and the category is Yellow!")
-    st.markdown("- Show me the list where the collector is David and the forecast code is AUTO!")
-    st.markdown("- Show me the list where the collector is John and the forecast date is after August!")
-    st.markdown("- How many AUTO in Forecastcode per collector?")
-    st.markdown("- How many invoice numbers with due date greater than August 10th 2024?")
-    st.markdown("- How many green per collector in category?")
+    # # Example inquiries section
+    # st.markdown("**Example Inquiries:**")
+    # st.markdown("- What are the items with a due date after today?")
+    # st.markdown("- Show me the list where the collector is Lisa and the category is Yellow!")
+    # st.markdown("- Show me the list where the collector is David and the forecast code is AUTO!")
+    # st.markdown("- Show me the list where the collector is John and the forecast date is after August!")
+    # st.markdown("- How many AUTO in Forecastcode per collector?")
+    # st.markdown("- How many invoice numbers with due date greater than August 10th 2024?")
+    # st.markdown("- How many green per collector in category?")
+
+    with st.expander("Here are sample questions you may ask"):
+        st.info(
+            f"""
+            - What are the items with a due date after today??
+            - Show me the list where the collector is Lisa and the category is Yellow!
+            - Show me the list where the collector is David and the forecast code is AUTO!
+            - Show me the list where the collector is John and the forecast date is after August!
+            - How many AUTO in Forecastcode per collector?
+            - How many invoice numbers with due date greater than August 10th 2024?
+            - How many green per collector in category??
+            - ++++++++++++++TBD++++++++++++++
+            """
+        )
 
     # Form for inquiry submission
     inquiry = st.text_input('Submit an Inquiry:', '')
@@ -170,9 +188,24 @@ def main():
         st.write(response)
 
     # Display transactions table using Pandas DataFrame
-    st.markdown("**Transactions:**")
+    st.markdown("**EngageAR shows:**")
     transactions = fetch_transactions()
     st.dataframe(transactions)
+    
+
+    transactions.dtypes
+    
+
+    st.markdown(transactions)
+
+    transactions_data = pd.DataFrame(transactions)
+    
+
+    chart_data = pd.DataFrame(
+        np.random.randn(20,3),
+        columns=["a","b","c"]
+)
+    st.bar_chart(transactions_data, x="Collector", y="Category", use_container_width=True)
 
     # Custom CSS for table styling
     st.markdown(

@@ -14,28 +14,28 @@ def local_css(file_name):
 local_css("styles/styles_main.css")
 
 # get the variables from constants.py
-pronoun = info['Pronoun']
+#pronoun = info['Pronoun']
 
 # app sidebar (좌측 메뉴 하단)
-with st.sidebar:
-    st.markdown("""
+#with st.sidebar:
+#    st.markdown("""
                 # FAQ
-                """)
-    with st.expander("Click here to see FAQs"):
-        st.info(
-            f"""
-            - What are the items with a due date after today??
-            - Show me the list where the collector is Lisa and the category is Yellow!
-            - Show me the list where the collector is David and the forecast code is AUTO!
-            - Show me the list where the collector is John and the forecast date is after August!
-            - How many AUTO in Forecastcode per collector?
-            - How many invoice numbers with due date greater than August 10th 2024?
-            - How many green per collector in category??
-            - ++++++++++++++TBD++++++++++++++
-            """
-        )
+#                """)
+#    with st.expander("Click here to see FAQs"):
+#        st.info(
+#            f"""
+#            - What are the items with a due date after today??
+#            - Show me the list where the collector is Lisa and the category is Yellow!
+#            - Show me the list where the collector is David and the forecast code is AUTO!
+#            - Show me the list where the collector is John and the forecast date is after August!
+#            - How many AUTO in Forecastcode per collector?
+#            - How many invoice numbers with due date greater than August 10th 2024?
+#            - How many green per collector in category??
+#            - ++++++++++++++TBD++++++++++++++
+#            """
+#        )
         
-    st.caption(f"© Made by CSL_Test 2024. All rights reserved.")
+#    st.caption(f"© Made by CSL_Test 2024. All rights reserved.")
 
 import requests
 
@@ -55,15 +55,38 @@ with col1:
     st.write(info['About'])
 
     from streamlit_extras.switch_page_button import switch_page
-    col_1, col_2, temp = st.columns([0.4,0.2,0.4])
+    col_1, col_2, col_3 = st.columns([0.4,0.4,0.4])
     with col_1:
-        btn1 = st.button("Feel free to ask anything about AR")
+        btn1 = st.button("Ask anything about EngageAR")
         if btn1:
-            switch_page("AI_Assistant_Chat")
+            switch_page("EngageAR")
     with col_2:
-        btn2 = st.button("Raw Data")
+        btn2 = st.button("Show me payment trend")
         if btn2:
-            switch_page("Raw Data")
+            switch_page("Payment trend")
+    with col_3:
+        btn2 = st.button("Tell me contract info")
+        if btn2:
+            switch_page("Contract info")
+
+    st.markdown("""
+                # FAQ
+                """)
+    with st.expander("Here are sample questions you may ask"):
+        st.info(
+            f"""
+            - What are the items with a due date after today??
+            - Show me the list where the collector is Lisa and the category is Yellow!
+            - Show me the list where the collector is David and the forecast code is AUTO!
+            - Show me the list where the collector is John and the forecast date is after August!
+            - How many AUTO in Forecastcode per collector?
+            - How many invoice numbers with due date greater than August 10th 2024?
+            - How many green per collector in category??
+            - ++++++++++++++TBD++++++++++++++
+            """
+        )
+        
+    st.caption(f"© Made by CSL_Test 2024. All rights reserved.")
 
 import streamlit.components.v1 as components
 
@@ -82,135 +105,136 @@ def change_button_color(widget_label, background_color='transparent'):
 
 change_button_color('Chat with My AI Assistant', '#0cc789') 
 
-from  PIL import Image
-with col2:
-    profile = Image.open("images/profile.png")
-    st.image(profile, width=280)
+# from  PIL import Image
+# with col2:
+#     profile = Image.open("images/profile.png")
+#     st.image(profile, width=280)
 
        
 st.write("---")
 with st.container():  
-    col1,col2,col3 = st.columns([0.475, 0.475, 0.05])
+    col1,col2,col3 = st.columns([0.01, 0.475, 0.05])
+    
         
-    with col1:
-        st.subheader("👄 Coworker Endorsements")
-        components.html(
-        f"""
-        <!DOCTYPE html>
-        <html>
-        <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <style>
-            * {{box-sizing: border-box;}}
-            .mySlides {{display: none;}}
-            img {{vertical-align: middle;}}
+    # with col1:
+    #     st.subheader("👄 Coworker Endorsements")
+    #     components.html(
+    #     f"""
+    #     <!DOCTYPE html>
+    #     <html>
+    #     <head>
+    #     <meta name="viewport" content="width=device-width, initial-scale=1">
+    #     <style>
+    #         * {{box-sizing: border-box;}}
+    #         .mySlides {{display: none;}}
+    #         img {{vertical-align: middle;}}
 
-            /* Slideshow container */
-            .slideshow-container {{
-            position: relative;
-            margin: auto;
-            width: 100%;
-            }}
+    #         /* Slideshow container */
+    #         .slideshow-container {{
+    #         position: relative;
+    #         margin: auto;
+    #         width: 100%;
+    #         }}
 
-            /* The dots/bullets/indicators */
-            .dot {{
-            height: 15px;
-            width: 15px;
-            margin: 0 2px;
-            background-color: #eaeaea;
-            border-radius: 50%;
-            display: inline-block;
-            transition: background-color 0.6s ease;
-            }}
+    #         /* The dots/bullets/indicators */
+    #         .dot {{
+    #         height: 15px;
+    #         width: 15px;
+    #         margin: 0 2px;
+    #         background-color: #eaeaea;
+    #         border-radius: 50%;
+    #         display: inline-block;
+    #         transition: background-color 0.6s ease;
+    #         }}
 
-            .active {{
-            background-color: #6F6F6F;
-            }}
+    #         .active {{
+    #         background-color: #6F6F6F;
+    #         }}
 
-            /* Fading animation */
-            .fade {{
-            animation-name: fade;
-            animation-duration: 1s;
-            }}
+    #         /* Fading animation */
+    #         .fade {{
+    #         animation-name: fade;
+    #         animation-duration: 1s;
+    #         }}
 
-            @keyframes fade {{
-            from {{opacity: .4}} 
-            to {{opacity: 1}}
-            }}
+    #         @keyframes fade {{
+    #         from {{opacity: .4}} 
+    #         to {{opacity: 1}}
+    #         }}
 
-            /* On smaller screens, decrease text size */
-            @media only screen and (max-width: 300px) {{
-            .text {{font-size: 11px}}
-            }}
-            </style>
-        </head>
-        <body>
-            <div class="slideshow-container">
-                <div class="mySlides fade">
-                <img src={endorsements["img1"]} style="width:100%">
-                </div>
+    #         /* On smaller screens, decrease text size */
+    #         @media only screen and (max-width: 300px) {{
+    #         .text {{font-size: 11px}}
+    #         }}
+    #         </style>
+    #     </head>
+    #     <body>
+    #         <div class="slideshow-container">
+    #             <div class="mySlides fade">
+    #             <img src={endorsements["img1"]} style="width:100%">
+    #             </div>
 
-                <div class="mySlides fade">
-                <img src={endorsements["img2"]} style="width:100%">
-                </div>
+    #             <div class="mySlides fade">
+    #             <img src={endorsements["img2"]} style="width:100%">
+    #             </div>
 
-                <div class="mySlides fade">
-                <img src={endorsements["img3"]} style="width:100%">
-                </div>
+    #             <div class="mySlides fade">
+    #             <img src={endorsements["img3"]} style="width:100%">
+    #             </div>
 
-            </div>
-            <br>
+    #         </div>
+    #         <br>
 
-            <div style="text-align:center">
-                <span class="dot"></span> 
-                <span class="dot"></span> 
-                <span class="dot"></span> 
-            </div>
+    #         <div style="text-align:center">
+    #             <span class="dot"></span> 
+    #             <span class="dot"></span> 
+    #             <span class="dot"></span> 
+    #         </div>
 
-            <script>
-            let slideIndex = 0;
-            showSlides();
+    #         <script>
+    #         let slideIndex = 0;
+    #         showSlides();
 
-            function showSlides() {{
-            let i;
-            let slides = document.getElementsByClassName("mySlides");
-            let dots = document.getElementsByClassName("dot");
-            for (i = 0; i < slides.length; i++) {{
-                slides[i].style.display = "none";  
-            }}
-            slideIndex++;
-            if (slideIndex > slides.length) {{slideIndex = 1}}    
-            for (i = 0; i < dots.length; i++) {{
-                dots[i].className = dots[i].className.replace("active", "");
-            }}
-            slides[slideIndex-1].style.display = "block";  
-            dots[slideIndex-1].className += " active";
-            }}
+    #         function showSlides() {{
+    #         let i;
+    #         let slides = document.getElementsByClassName("mySlides");
+    #         let dots = document.getElementsByClassName("dot");
+    #         for (i = 0; i < slides.length; i++) {{
+    #             slides[i].style.display = "none";  
+    #         }}
+    #         slideIndex++;
+    #         if (slideIndex > slides.length) {{slideIndex = 1}}    
+    #         for (i = 0; i < dots.length; i++) {{
+    #             dots[i].className = dots[i].className.replace("active", "");
+    #         }}
+    #         slides[slideIndex-1].style.display = "block";  
+    #         dots[slideIndex-1].className += " active";
+    #         }}
 
-            var interval = setInterval(showSlides, 2500); // Change image every 2.5 seconds
+    #         var interval = setInterval(showSlides, 2500); // Change image every 2.5 seconds
 
-            function pauseSlides(event)
-            {{
-                clearInterval(interval); // Clear the interval we set earlier
-            }}
-            function resumeSlides(event)
-            {{
-                interval = setInterval(showSlides, 2500);
-            }}
-            // Set up event listeners for the mySlides
-            var mySlides = document.getElementsByClassName("mySlides");
-            for (i = 0; i < mySlides.length; i++) {{
-            mySlides[i].onmouseover = pauseSlides;
-            mySlides[i].onmouseout = resumeSlides;
-            }}
-            </script>
+    #         function pauseSlides(event)
+    #         {{
+    #             clearInterval(interval); // Clear the interval we set earlier
+    #         }}
+    #         function resumeSlides(event)
+    #         {{
+    #             interval = setInterval(showSlides, 2500);
+    #         }}
+    #         // Set up event listeners for the mySlides
+    #         var mySlides = document.getElementsByClassName("mySlides");
+    #         for (i = 0; i < mySlides.length; i++) {{
+    #         mySlides[i].onmouseover = pauseSlides;
+    #         mySlides[i].onmouseout = resumeSlides;
+    #         }}
+    #         </script>
 
-            </body>
-            </html> 
+    #         </body>
+    #         </html> 
 
-            """,
-                height=270,
-    )
+    #         """,
+    #             height=270,
+    # )
 
     with col2:
         st.subheader("📨 Contact Me")

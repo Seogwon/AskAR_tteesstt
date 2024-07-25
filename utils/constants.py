@@ -39,11 +39,11 @@ info = {
    "Name": "Vicky",
    "Full_Name":"TTW_AskAR", 
    "Intro": "Text-To-Watsonx(SQL) : AskAR at 2024 IBMer watsonx Challenge",
-   "About":"Hello, It's a testbed(🛠️🛏️).",
+   "About":"What do you have in your mind? (🛠️🛏️).",
    "Project":"https://author.skills.network/instructors/vicky_kuo",
    "Medium":"https://medium.com/@vicky-note/about",
    "City":"Toronto, Canada",
-   "Resume": "https://drive.google.com/file/d/1e_trgOgzwYIY6eMSvjmyjgqBcCOdueZ1/view?usp=sharing",
+   "Resume": "https://ibm.ent.box.com/folder/213646148349?s=53ixgcm3dih3bix2u2hysjjzff013ou5",
    "Email": "changsup.lim1@ibm.com" 
 }
 
